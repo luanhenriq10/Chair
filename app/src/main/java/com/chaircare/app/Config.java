@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,26 +21,40 @@ import android.widget.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.UUID;
 
 
 public class Config extends Activity{
 
+    private BluetoothSocket mmSocket;
+    private BluetoothDevice mmDevice;
     private ImageButton btn_home=null;
     private Switch btToggle=null;
     private Button bt_find_device=null;
     private ArrayAdapter<String> mNewDevicesArrayAdapter;
     private  BluetoothAdapter mBluetoothAdapter = null;
     private IntentFilter filter=null;
+    private OutputStream mmOutputStream;
+    private InputStream mmInputStream;
     private Context context=this;
+    private Thread workerThread;
     private Activity activity=this;
     private Switch switch_alarm=null;
     private MediaPlayer player = new MediaPlayer();
 
+
     private LinearLayout device_list_header=null;
     private ListView device_list=null;
+
+    byte[] readBuffer;
+    int readBufferPosition;
+    int counter;
+    volatile boolean stopWorker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,8 +132,6 @@ public class Config extends Activity{
             public void onClick(View v) {
 
 
-
-
             }
         });
 
@@ -135,7 +148,6 @@ public class Config extends Activity{
         startActivity(config);
 
 
-        this.finish();
     }
 
     private void listBTDevices()
@@ -155,9 +167,99 @@ public class Config extends Activity{
         filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         this.registerReceiver(mReceiver, filter);
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        try{
+            if(mmDevice != null)
+                openBT();
+        }catch(Exception e){Toast.makeText(context, "An error occurrs", Toast.LENGTH_LONG).show();}
+    }
+
+    private void openBT() throws IOException
+    {
+        UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb"); //Standard SerialPortService ID
+        mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
+        mmSocket.connect();
+        mmOutputStream = mmSocket.getOutputStream();
+        mmInputStream = mmSocket.getInputStream();
+
+        beginListenForData();
+
+        Toast.makeText(context, "Bluetooth Opened", Toast.LENGTH_LONG).show();
     }
 
 
+    void beginListenForData()
+    {
+        final Handler handler = new Handler();
+        final byte delimiter = 32; //This is the ASCII code for a newline character
+
+        stopWorker = false;
+        readBufferPosition = 0;
+        readBuffer = new byte[1024];
+
+
+        workerThread = new Thread(new Runnable()
+        {
+            public void run()
+            {
+                while(!Thread.currentThread().isInterrupted() && !stopWorker)
+                {
+                    try
+                    {
+                        sendData();
+                        int bytesAvailable = mmInputStream.available();
+                        if(bytesAvailable > 0)
+                        {
+                            byte[] packetBytes = new byte[bytesAvailable];
+                            mmInputStream.read(packetBytes);
+                            for(int i=0;i<bytesAvailable;i++)
+                            {
+                                byte b = packetBytes[i];
+                                if(b == delimiter)
+                                {
+                                    byte[] encodedBytes = new byte[readBufferPosition];
+                                    System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
+                                    final String data = new String(encodedBytes, "US-ASCII");
+                                    readBufferPosition = 0;
+
+                                    //System.out.println("Luaaan " + data);
+                                    handler.post(new Runnable()
+                                    {
+                                        public void run()
+                                        {
+                                            //Toast.makeText(context, ""+data, Toast.LENGTH_SHORT).show();
+                                            ShareData.data = data;
+
+                                        }
+                                        public String getData()
+                                        {
+                                            return data;
+                                        }
+                                    });
+                                }
+                                else
+                                {
+                                    readBuffer[readBufferPosition++] = b;
+                                }
+                            }
+                        }
+                    }
+                    catch (IOException ex)
+                    {
+                        stopWorker = true;
+                    }
+                }
+            }
+        });
+
+        workerThread.start();
+    }
+
+    void sendData() throws IOException
+    {
+        mmOutputStream.write("*\n".getBytes());
+        //myLabel.setText("Data Sent");
+    }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -171,51 +273,34 @@ public class Config extends Activity{
                 // If it's already paired, skip it, because it's been listed already
                 if (device.getBondState() != BluetoothDevice.BOND_BONDED)
                 {
-                    mNewDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-                    mNewDevicesArrayAdapter.notifyDataSetChanged();
-                }
+                    if(device.getName().equals("HC-06")) {
+                        Toast.makeText(context,"Encontrado o dispositivo", Toast.LENGTH_SHORT).show();
+                        mNewDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                        mNewDevicesArrayAdapter.notifyDataSetChanged();
+                        mmDevice = device;
+                        boundDevice(mmDevice);
+                        if(mmDevice.getBondState() == 1)
+                            Toast.makeText(context, "Pareado com o " + mmDevice.getName(),Toast.LENGTH_LONG).show();
+                        else
+                            Toast.makeText(context, "Pareado com o " + mmDevice.getName(),Toast.LENGTH_LONG).show();
 
+
+                    }
+                }
 
             }
         }
     };
 
-    static MediaPlayer getMediaPlayer(Context context){
-
-        MediaPlayer mediaplayer = new MediaPlayer();
-
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.KITKAT) {
-            return mediaplayer;
+    public void boundDevice(BluetoothDevice device){
+        try {
+            Method method = device.getClass().getMethod("createBond", (Class[]) null);
+            method.invoke(device, (Object[]) null);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        try {
-            Class<?> cMediaTimeProvider = Class.forName( "android.media.MediaTimeProvider" );
-            Class<?> cSubtitleController = Class.forName( "android.media.SubtitleController" );
-            Class<?> iSubtitleControllerAnchor = Class.forName( "android.media.SubtitleController$Anchor" );
-            Class<?> iSubtitleControllerListener = Class.forName( "android.media.SubtitleController$Listener" );
 
-            Constructor constructor = cSubtitleController.getConstructor(new Class[]{Context.class, cMediaTimeProvider, iSubtitleControllerListener});
-
-            Object subtitleInstance = constructor.newInstance(context, null, null);
-
-            Field f = cSubtitleController.getDeclaredField("mHandler");
-
-            f.setAccessible(true);
-            try {
-                f.set(subtitleInstance, new Handler());
-            }
-            catch (IllegalAccessException e) {return mediaplayer;}
-            finally {
-                f.setAccessible(false);
-            }
-
-            Method setsubtitleanchor = mediaplayer.getClass().getMethod("setSubtitleAnchor", cSubtitleController, iSubtitleControllerAnchor);
-
-            setsubtitleanchor.invoke(mediaplayer, subtitleInstance, null);
-            //Log.e("", "subtitle is setted :p");
-        } catch (Exception e) {}
-
-        return mediaplayer;
     }
 
 
