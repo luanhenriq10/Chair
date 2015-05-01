@@ -1,39 +1,54 @@
 package com.chaircare.app;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
 
 
-public class About extends ActionBarActivity {
+public class About extends Activity {
+    private ImageButton back_btn=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+        setDefaultListeners();
     }
 
+    private void setDefaultListeners()
+    {
+        back_btn=(ImageButton)findViewById(R.id.btn_back_about);
+        setOnClickListeners();
+
+    }
+
+    private void setOnClickListeners()
+    {
+        back_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callHome();
+            }
+        });
+    }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_about, menu);
-        return true;
+    public void onBackPressed() {
+        callHome();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    private void callHome()
+    {
+        Intent config = new Intent(this, MainActivity.class);
+        config.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        startActivity(config);
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        this.finish();
     }
+
 }

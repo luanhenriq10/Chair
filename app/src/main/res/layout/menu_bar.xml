@@ -3,7 +3,7 @@
               android:layout_width="match_parent"
               android:layout_height="55dp"
               android:layout_gravity="bottom|center_horizontal"
-              android:background="@color/MainBlue"
+              android:background="@drawable/menu_shape"
         >
 
     <ImageButton

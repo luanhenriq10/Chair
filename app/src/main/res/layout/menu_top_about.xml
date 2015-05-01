@@ -4,19 +4,26 @@
               android:layout_height="55dp"
               android:layout_gravity="top|center_horizontal"
               android:background="@drawable/menu_shape"
-              android:orientation="vertical">
+              android:orientation="horizontal">
+    <ImageButton
+        android:id="@+id/btn_back_about"
+        android:src="@drawable/ic_arrow_back_white"
+        android:clickable="true"
+        style="@style/MenuBarStyle"
+        />
 
     <TextView
             android:gravity="center_horizontal|center_vertical"
-            android:layout_width="match_parent"
+            android:layout_width="319dp"
             android:layout_height="match_parent"
-            android:text="Configurações"
+            android:text="Sobre"
             android:textColor="@color/white"
             android:textAlignment="center"
             android:layout_gravity="center_horizontal|center_vertical"
             android:textSize="@dimen/abc_text_size_title_material_toolbar"
 
             />
+
 
 
 </LinearLayout>
