@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="55dp"
+              android:layout_gravity="bottom|center_horizontal"
+              android:background="@color/MainBlue"
+        >
+
+    <ImageButton
+            android:id="@+id/btn_home"
+            android:src="@drawable/home"
+            android:clickable="true"
+            style="@style/MenuBarStyle"
+            android:contentDescription="Home"/>
+
+
+    <ImageButton
+            android:id="@+id/btn_back"
+            android:src="@drawable/ic_arrow_back_white"
+            android:clickable="true"
+            style="@style/MenuBarStyle"
+            android:contentDescription="NULL"/>
+
+    <ImageButton
+            android:id="@+id/btn_config"
+            android:src="@drawable/settings"
+            android:clickable="true"
+            style="@style/MenuBarStyle"
+            android:contentDescription="Config"/>
+
+</LinearLayout>

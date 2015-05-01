@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="55dp"
+              android:layout_gravity="top|center_horizontal"
+              android:background="@color/MainBlue"
+              android:orientation="vertical">
+
+    <TextView
+            android:gravity="center_horizontal|center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Configurações"
+            android:textColor="@color/white"
+            android:textAlignment="center"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:textSize="@dimen/abc_text_size_title_material_toolbar"
+
+            />
+
+
+</LinearLayout>

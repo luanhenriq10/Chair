@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/menu_top"
+android:layout_width="match_parent"
+android:layout_height="55dp"
+android:layout_gravity="top|center_horizontal"
+android:background="@color/MainBlue"
+android:orientation="horizontal" >
+
+    <ImageButton
+            android:id="@+id/btn_main_menu"
+
+            android:src="@drawable/ic_menu_white"
+            android:clickable="true"
+            style="@style/MenuBarStyle"
+            android:contentDescription="Menu" android:layout_width="wrap_content" android:layout_height="match_parent"/>
+
+    <TextView
+            android:gravity="center_horizontal|center_vertical"
+            android:layout_width="266dp"
+            android:layout_height="match_parent"
+            android:text="Blue Chair"
+            android:textColor="@color/white"
+            android:textAlignment="center"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:textSize="@dimen/abc_text_size_title_material_toolbar"
+            android:layout_marginRight="30dp"/>
+
+
+</LinearLayout>
+
+
