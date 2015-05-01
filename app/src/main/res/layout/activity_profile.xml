@@ -61,7 +61,7 @@
                         />
                 <TextView
                         android:layout_margin="10dp"
-                        android:text="gustavohgs13@gmail.com"
+                        android:text="gustavohgs@gmail.com"
                         style="@style/SmallTextViewAbout"
                         android:gravity="center_horizontal|center_vertical"
                         android:layout_width="match_parent"
