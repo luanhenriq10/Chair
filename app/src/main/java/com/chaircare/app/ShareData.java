@@ -5,4 +5,5 @@ package com.chaircare.app;
  */
 public class ShareData {
     public static volatile String data= "1023";
+    public static volatile String status="offline";
 }

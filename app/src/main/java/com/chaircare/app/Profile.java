@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 public class Profile extends Activity {
     private ImageButton btn_home=null;
     private ImageButton btn_config=null;
+    private ImageButton btn_back=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +27,7 @@ public class Profile extends Activity {
 
         btn_home = (ImageButton) findViewById(R.id.btn_home);
         btn_config=(ImageButton)findViewById(R.id.btn_config);
+        btn_back=(ImageButton)findViewById(R.id.btn_back);
         setOnClickListeners();
 
     }
@@ -46,6 +48,13 @@ public class Profile extends Activity {
 
             }
         });
+
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callHome();
+            }
+        });
     }
 
     private void callHome()
@@ -53,7 +62,6 @@ public class Profile extends Activity {
         Intent config = new Intent(this, MainActivity.class);
         config.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(config);
-
         this.finish();
     }
 

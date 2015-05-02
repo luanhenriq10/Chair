@@ -37,6 +37,7 @@ public class Config extends Activity{
     private BluetoothDevice mmDevice;
     private ImageButton btn_home=null;
     private ImageButton btn_config=null;
+    private ImageButton btn_back=null;
     private Switch btToggle=null;
     private Button bt_find_device=null;
     private ArrayAdapter<String> mNewDevicesArrayAdapter;
@@ -65,8 +66,8 @@ public class Config extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config);
-        setDefaultListeners();
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        setDefaultListeners();
         listBTDevices();
     }
 
@@ -74,6 +75,7 @@ public class Config extends Activity{
     public void onBackPressed()
     {
         callHome();
+
 
     }
 
@@ -83,7 +85,14 @@ public class Config extends Activity{
         btn_home=(ImageButton)findViewById(R.id.btn_home);
         btn_config=(ImageButton)findViewById(R.id.btn_config);
         btn_config.setImageResource(R.drawable.settings_gray);
+        btn_back=(ImageButton)findViewById(R.id.btn_back);
         btToggle= (Switch)findViewById(R.id.switch_en_dis);
+        if(mBluetoothAdapter.isEnabled())
+            btToggle.setChecked(true);
+
+        else
+            btToggle.setChecked(false);
+
         bt_find_device=(Button)findViewById(R.id.btn_search_devices);
         switch_alarm=(Switch)findViewById(R.id.switch_alarm);
         device_list_header=(LinearLayout)findViewById(R.id.list_device_layout_header);
@@ -103,6 +112,12 @@ public class Config extends Activity{
             public void onClick(View v) {
                 callHome();
 
+            }
+        });
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callHome();
             }
         });
 
@@ -139,15 +154,10 @@ public class Config extends Activity{
             public void onClick(View v) {
 
                 final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-                final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                 mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
                 try {
                     int resID=getResources().getIdentifier("alarm", "raw", getPackageName());
-
                     MediaPlayer mediaPlayer=MediaPlayer.create(context,resID);
-
-
-
                     mediaPlayer.start();
 
                 }catch (Exception e)
@@ -169,7 +179,7 @@ public class Config extends Activity{
         Intent config = new Intent(this, MainActivity.class);
         config.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(config);
-
+        this.finish();
 
     }
 

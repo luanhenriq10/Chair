@@ -35,7 +35,12 @@ public class MainActivity extends BaseActivity {
 
     private ImageButton btn_config=null;
     private ImageButton btn_main_menu=null;
+    private ImageButton btn_back=null;
     public TextView busy_view=null;
+    public TextView status_text=null;
+    public ImageView status_img=null;
+    public TextView locker_text=null;
+    public ImageView locker_img=null;
     private Thread work;
 
     private ImageButton btn_home=null;
@@ -63,6 +68,28 @@ public class MainActivity extends BaseActivity {
                                 busy_view.setText("Desocupada");
                             else
                                 busy_view.setText("Ocupada");
+
+                            if(ShareData.status.equals("offline"))
+                            {
+                                status_text.setText("OFFLINE");
+                                status_img.setImageResource(R.drawable.offline);
+                            }
+                            else
+                            {
+                                status_text.setText("ONLINE");
+                                status_img.setImageResource(R.drawable.check);
+                            }
+
+                            if(Integer.parseInt(ShareData.data) <1022 && ShareData.status.equals("online") )
+                            {
+                                locker_text.setText("Seguro");
+                                locker_img.setImageResource(R.drawable.lock);
+                            }
+                            else
+                            {
+                                locker_text.setText("Inseguro");
+                                locker_img.setImageResource(R.drawable.unlock);
+                            }
                         }
                     });
                     try {
@@ -80,26 +107,26 @@ public class MainActivity extends BaseActivity {
 
 
     }
-    @Override
-    public void onBackPressed()
-    {
-        if(onBackVerify())
-            mainMenuAction();
-        else
-            this.finish();
-    }
+
 
     private void setDefaultListeners()
     {
 
         btn_config=(ImageButton)findViewById(R.id.btn_config);
         btn_main_menu=(ImageButton)findViewById(R.id.btn_main_menu);
+        btn_back=(ImageButton)findViewById(R.id.btn_back);
 
         busy_view=(TextView)findViewById(R.id.peso_main);
         busy_view.setText(ShareData.data);
 
         btn_home=(ImageButton)findViewById(R.id.btn_home);
         btn_home.setImageResource(R.drawable.home_gray);
+
+        status_text=(TextView)findViewById(R.id.status_text);
+        status_img=(ImageView)findViewById(R.id.status_img);
+
+        locker_text=(TextView)findViewById(R.id.lock_text);
+        locker_img=(ImageView)findViewById(R.id.lock_img);
 
         setOnClickListeners();
 
@@ -122,6 +149,13 @@ public class MainActivity extends BaseActivity {
             }
         });
 
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                exit();
+            }
+        });
+
     }
 
     private void callConfig()
@@ -134,6 +168,17 @@ public class MainActivity extends BaseActivity {
         this.finish();
     }
 
+    @Override
+    public void onBackPressed()
+    {
+        if(onBackVerify())
+            mainMenuAction();
+        else
+            this.finish();
+    }
 
-
+    private void exit()
+    {
+        this.finish();
+    }
 }
