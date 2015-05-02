@@ -120,14 +120,18 @@ public class Config extends Activity{
         switch_alarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MediaPlayer player;
-                try {
-                    AssetFileDescriptor afd = getAssets().openFd("alarm.mp3");
-                    player = new MediaPlayer();
-                    player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-                    player.prepare();
 
-                    player.start();
+                final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+                final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+                try {
+                    int resID=getResources().getIdentifier("alarm", "raw", getPackageName());
+
+                    MediaPlayer mediaPlayer=MediaPlayer.create(context,resID);
+
+
+
+                    mediaPlayer.start();
 
                 }catch (Exception e)
                 {
