@@ -231,9 +231,8 @@ public class MainActivity extends BaseActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         // Do stuff if user accepts
-                        busy_view.setText("Desocupada");
-                        status_text.setText("OFFLINE");
-                        status_img.setImageResource(R.drawable.offline);
+                        ShareData.data="1023";
+                        ShareData.status="offline";
                         mediaPlayer.stop();
 
                     }
