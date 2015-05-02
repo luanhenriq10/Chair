@@ -282,10 +282,11 @@ public class Config extends Activity{
 
                                 Toast.makeText(parent, "Foi perdido a conexão", Toast.LENGTH_LONG).show();
                                 stopWorker = true;
+                                conectado = false;
                             }
                         }
                     });
-                    try {
+                    try {git p
                         Thread.currentThread().sleep(250);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
