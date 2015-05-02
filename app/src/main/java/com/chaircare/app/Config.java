@@ -2,13 +2,11 @@ package com.chaircare.app;
 
 import android.app.Activity;
 
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -51,6 +49,7 @@ public class Config extends Activity{
     private Switch switch_alarm=null;
     private boolean conectado = false;
     public static Activity parent;
+
 
 
 
@@ -144,7 +143,7 @@ public class Config extends Activity{
                 device_list_header.setVisibility(View.VISIBLE);
                 device_list.setVisibility(View.VISIBLE);
 
-                Toast.makeText(context, "Buscando", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Buscando", Toast.LENGTH_LONG).show();
 
             }
         });
@@ -153,17 +152,7 @@ public class Config extends Activity{
             @Override
             public void onClick(View v) {
 
-                final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
-                try {
-                    int resID=getResources().getIdentifier("alarm", "raw", getPackageName());
-                    MediaPlayer mediaPlayer=MediaPlayer.create(context,resID);
-                    mediaPlayer.start();
 
-                }catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
 
             }
         });
@@ -176,9 +165,7 @@ public class Config extends Activity{
     private void callHome()
     {
 
-        Intent config = new Intent(this, MainActivity.class);
-        config.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        startActivity(config);
+
         this.finish();
 
     }
@@ -261,6 +248,7 @@ public class Config extends Activity{
                                                 public void run() {
                                                     //Toast.makeText(context, ""+data, Toast.LENGTH_SHORT).show();
                                                     ShareData.data = data;
+                                                    ShareData.status="online";
 
                                                 }
 
@@ -279,8 +267,8 @@ public class Config extends Activity{
                                     mmInputStream.close();
                                 } catch (Exception e) {
                                 }
-
-                                Toast.makeText(parent, "Foi perdido a conexão", Toast.LENGTH_LONG).show();
+                                ShareData.alarm = true;
+                                conectado = false;
                                 stopWorker = true;
                             }
                         }
@@ -357,6 +345,7 @@ public class Config extends Activity{
 
 
     }
+
 
 
 }
