@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        style="@style/MainInfoRoundField"
+        android:id="@+id/busy_view"
+        android:layout_width="253dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="35dp"
+        android:layout_weight="0.10">
+
+    <ImageView
+            android:src="@drawable/busy"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="15dp"
+
+            />
+
+
+    <TextView
+            android:id="@+id/peso_main"
+            android:gravity="center_horizontal"
+            android:layout_marginLeft="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ocupada"
+            android:textColor="@color/white"
+            android:textSize="25sp"/>
+</LinearLayout>
