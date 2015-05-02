@@ -8,8 +8,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -28,6 +30,7 @@ import java.lang.reflect.Method;
 public class Config extends Activity{
 
     private ImageButton btn_home=null;
+    private ImageButton btn_config=null;
     private Switch btToggle=null;
     private Button bt_find_device=null;
     private ArrayAdapter<String> mNewDevicesArrayAdapter;
@@ -36,7 +39,7 @@ public class Config extends Activity{
     private Context context=this;
     private Activity activity=this;
     private Switch switch_alarm=null;
-    private MediaPlayer player = new MediaPlayer();
+
 
     private LinearLayout device_list_header=null;
     private ListView device_list=null;
@@ -61,6 +64,8 @@ public class Config extends Activity{
     {
 
         btn_home=(ImageButton)findViewById(R.id.btn_home);
+        btn_config=(ImageButton)findViewById(R.id.btn_config);
+        btn_config.setImageResource(R.drawable.settings_gray);
         btToggle= (Switch)findViewById(R.id.switch_en_dis);
         bt_find_device=(Button)findViewById(R.id.btn_search_devices);
         switch_alarm=(Switch)findViewById(R.id.switch_alarm);
@@ -115,9 +120,19 @@ public class Config extends Activity{
         switch_alarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MediaPlayer player;
+                try {
+                    AssetFileDescriptor afd = getAssets().openFd("alarm.mp3");
+                    player = new MediaPlayer();
+                    player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                    player.prepare();
 
+                    player.start();
 
-
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
 
             }
         });

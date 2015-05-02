@@ -8,7 +8,7 @@
 
     <ImageButton
             android:id="@+id/btn_home"
-            android:src="@drawable/home"
+            android:src="@drawable/home_white"
             android:clickable="true"
             style="@style/MenuBarStyle"
             android:contentDescription="Home"/>
@@ -23,7 +23,7 @@
 
     <ImageButton
             android:id="@+id/btn_config"
-            android:src="@drawable/settings"
+            android:src="@drawable/settings_white"
             android:clickable="true"
             style="@style/MenuBarStyle"
             android:contentDescription="Config"/>

@@ -34,6 +34,7 @@ public class MainActivity extends BaseActivity {
 
     private ImageButton btn_config=null;
     private ImageButton btn_main_menu=null;
+    private ImageButton btn_home=null;
 
 
     @Override
@@ -61,6 +62,8 @@ public class MainActivity extends BaseActivity {
 
         btn_config=(ImageButton)findViewById(R.id.btn_config);
         btn_main_menu=(ImageButton)findViewById(R.id.btn_main_menu);
+        btn_home=(ImageButton)findViewById(R.id.btn_home);
+        btn_home.setImageResource(R.drawable.home_gray);
 
         setOnClickListeners();
 
