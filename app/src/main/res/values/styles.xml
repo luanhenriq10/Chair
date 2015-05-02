@@ -29,4 +29,20 @@
 
 
     </style>
+
+    <style name="LargeTextView" parent="SmallTextViewAbout">
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    </style>
+
+    <style name="SmallTextViewAbout" parent="TemplateWrapContent">
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="TemplateWrapContent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+
 </resources>

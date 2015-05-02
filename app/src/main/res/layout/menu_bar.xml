@@ -3,12 +3,12 @@
               android:layout_width="match_parent"
               android:layout_height="55dp"
               android:layout_gravity="bottom|center_horizontal"
-              android:background="@color/MainBlue"
+              android:background="@drawable/menu_shape"
         >
 
     <ImageButton
             android:id="@+id/btn_home"
-            android:src="@drawable/home"
+            android:src="@drawable/home_white"
             android:clickable="true"
             style="@style/MenuBarStyle"
             android:contentDescription="Home"/>
@@ -23,7 +23,7 @@
 
     <ImageButton
             android:id="@+id/btn_config"
-            android:src="@drawable/settings"
+            android:src="@drawable/settings_white"
             android:clickable="true"
             style="@style/MenuBarStyle"
             android:contentDescription="Config"/>

@@ -5,7 +5,7 @@ android:id="@+id/menu_top"
 android:layout_width="match_parent"
 android:layout_height="55dp"
 android:layout_gravity="top|center_horizontal"
-android:background="@color/MainBlue"
+android:background="@drawable/menu_shape"
 android:orientation="horizontal" >
 
     <ImageButton

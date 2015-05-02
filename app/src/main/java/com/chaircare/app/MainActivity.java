@@ -38,6 +38,9 @@ public class MainActivity extends BaseActivity {
     public TextView busy_view=null;
     private Thread work;
 
+    private ImageButton btn_home=null;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,9 +94,12 @@ public class MainActivity extends BaseActivity {
 
         btn_config=(ImageButton)findViewById(R.id.btn_config);
         btn_main_menu=(ImageButton)findViewById(R.id.btn_main_menu);
+
         busy_view=(TextView)findViewById(R.id.peso_main);
         busy_view.setText(ShareData.data);
 
+        btn_home=(ImageButton)findViewById(R.id.btn_home);
+        btn_home.setImageResource(R.drawable.home_gray);
 
         setOnClickListeners();
 

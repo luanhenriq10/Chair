@@ -9,8 +9,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -34,6 +36,7 @@ public class Config extends Activity{
     private BluetoothSocket mmSocket;
     private BluetoothDevice mmDevice;
     private ImageButton btn_home=null;
+    private ImageButton btn_config=null;
     private Switch btToggle=null;
     private Button bt_find_device=null;
     private ArrayAdapter<String> mNewDevicesArrayAdapter;
@@ -45,7 +48,9 @@ public class Config extends Activity{
     private Thread workerThread;
     private Activity activity=this;
     private Switch switch_alarm=null;
-    private MediaPlayer player = new MediaPlayer();
+    private boolean conectado = false;
+    public static Activity parent;
+
 
 
     private LinearLayout device_list_header=null;
@@ -76,6 +81,8 @@ public class Config extends Activity{
     {
 
         btn_home=(ImageButton)findViewById(R.id.btn_home);
+        btn_config=(ImageButton)findViewById(R.id.btn_config);
+        btn_config.setImageResource(R.drawable.settings_gray);
         btToggle= (Switch)findViewById(R.id.switch_en_dis);
         bt_find_device=(Button)findViewById(R.id.btn_search_devices);
         switch_alarm=(Switch)findViewById(R.id.switch_alarm);
@@ -122,7 +129,7 @@ public class Config extends Activity{
                 device_list_header.setVisibility(View.VISIBLE);
                 device_list.setVisibility(View.VISIBLE);
 
-                Toast.makeText(context, "Buscando", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "Buscando", Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -130,7 +137,18 @@ public class Config extends Activity{
         switch_alarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MediaPlayer player;
+                try {
+                    AssetFileDescriptor afd = getAssets().openFd("alarm.mp3");
+                    player = new MediaPlayer();
+                    player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                    player.prepare();
 
+                    player.start();
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
 
             }
         });
@@ -169,7 +187,7 @@ public class Config extends Activity{
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         try{
-            if(mmDevice != null)
+            if(mmDevice != null && conectado == false)
                 openBT();
         }catch(Exception e){Toast.makeText(context, "An error occurrs", Toast.LENGTH_LONG).show();}
     }
@@ -184,7 +202,7 @@ public class Config extends Activity{
 
         beginListenForData();
 
-        Toast.makeText(context, "Bluetooth Opened", Toast.LENGTH_LONG).show();
+        Toast.makeText(context, "Conectado ao " + mmDevice.getName(), Toast.LENGTH_LONG).show();
     }
 
 
@@ -197,56 +215,65 @@ public class Config extends Activity{
         readBufferPosition = 0;
         readBuffer = new byte[1024];
 
-
+        this.parent = this;
         workerThread = new Thread(new Runnable()
         {
             public void run()
             {
+                conectado = true;
                 while(!Thread.currentThread().isInterrupted() && !stopWorker)
                 {
-                    try
-                    {
-                        sendData();
-                        int bytesAvailable = mmInputStream.available();
-                        if(bytesAvailable > 0)
-                        {
-                            byte[] packetBytes = new byte[bytesAvailable];
-                            mmInputStream.read(packetBytes);
-                            for(int i=0;i<bytesAvailable;i++)
-                            {
-                                byte b = packetBytes[i];
-                                if(b == delimiter)
-                                {
-                                    byte[] encodedBytes = new byte[readBufferPosition];
-                                    System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
-                                    final String data = new String(encodedBytes, "US-ASCII");
-                                    readBufferPosition = 0;
+                    runOnUiThread(new Runnable() {
 
-                                    //System.out.println("Luaaan " + data);
-                                    handler.post(new Runnable()
-                                    {
-                                        public void run()
-                                        {
-                                            //Toast.makeText(context, ""+data, Toast.LENGTH_SHORT).show();
-                                            ShareData.data = data;
+                        @Override
+                        public void run() {
+                            try {
+                                sendData();
+                                int bytesAvailable = mmInputStream.available();
+                                if (bytesAvailable > 0) {
+                                    byte[] packetBytes = new byte[bytesAvailable];
+                                    mmInputStream.read(packetBytes);
+                                    for (int i = 0; i < bytesAvailable; i++) {
+                                        byte b = packetBytes[i];
+                                        if (b == delimiter) {
+                                            byte[] encodedBytes = new byte[readBufferPosition];
+                                            System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
+                                            final String data = new String(encodedBytes, "US-ASCII");
+                                            readBufferPosition = 0;
 
+                                            //System.out.println("Luaaan " + data);
+                                            handler.post(new Runnable() {
+                                                public void run() {
+                                                    //Toast.makeText(context, ""+data, Toast.LENGTH_SHORT).show();
+                                                    ShareData.data = data;
+
+                                                }
+
+                                                public String getData() {
+                                                    return data;
+                                                }
+                                            });
+                                        } else {
+                                            readBuffer[readBufferPosition++] = b;
                                         }
-                                        public String getData()
-                                        {
-                                            return data;
-                                        }
-                                    });
+                                    }
                                 }
-                                else
-                                {
-                                    readBuffer[readBufferPosition++] = b;
+                            } catch (Exception ex) {
+                                try {
+                                    mmOutputStream.close();
+                                    mmInputStream.close();
+                                } catch (Exception e) {
                                 }
+
+                                Toast.makeText(parent, "Foi perdido a conexão", Toast.LENGTH_LONG).show();
+                                stopWorker = true;
                             }
                         }
-                    }
-                    catch (IOException ex)
-                    {
-                        stopWorker = true;
+                    });
+                    try {
+                        Thread.currentThread().sleep(250);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -280,10 +307,23 @@ public class Config extends Activity{
                         mmDevice = device;
                         boundDevice(mmDevice);
                         if(mmDevice.getBondState() == 1)
-                            Toast.makeText(context, "Pareado com o " + mmDevice.getName(),Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, "Pareado com o " + mmDevice.getName(),Toast.LENGTH_SHORT).show();
                         else
-                            Toast.makeText(context, "Pareado com o " + mmDevice.getName(),Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, "Pareado com o " + mmDevice.getName(),Toast.LENGTH_SHORT).show();
 
+
+                    }
+                }
+                else if(device.getBondState() == BluetoothDevice.BOND_BONDED)
+                {
+                    if(device.getName().equals("HC-06")) {
+                        mmDevice = device;
+                        try{
+                            if(conectado == false)
+                                openBT();
+                        }catch(Exception e){
+                            Toast.makeText(context,"Erro ao conectar",Toast.LENGTH_SHORT).show();
+                        }
 
                     }
                 }
